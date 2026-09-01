@@ -337,6 +337,18 @@ body.landscape #results h2,body.landscape #resCourse{width:100%;margin:0}
   #holeBox{left:calc(env(safe-area-inset-left,0px) + var(--sal) + 88px);right:calc(env(safe-area-inset-right,0px) + var(--sar) + 112px);padding:6px 9px}
 }
 
+/* ---------- MediaCube revision v1.3 ---------- */
+body.paused #btnLine,body.paused #btnUndo,body.paused #cupArrow,body.paused #coach,body.paused #btnPause{visibility:hidden!important}
+body.hostpause .overlay .btn,body.hostpause .ib,body.hostpause .setSeg button,body.hostpause .scard,body.hostpause .tab{pointer-events:none!important;opacity:.55}
+body.hostpause #adMock .btn{pointer-events:auto!important;opacity:1}
+body.modal #topBtns{visibility:hidden}
+#shopGrid{max-width:100%}
+@media (max-width:480px){
+  #dots{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 104px)}
+  #btnUndo,#btnLine{right:calc(env(safe-area-inset-right,0px) + var(--sar) + 12px)}
+  #btnLine{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 128px)}
+  #btnUndo{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 184px)}
+}
 </style>
 </head>
 <body>
@@ -359,7 +371,7 @@ body.landscape #results h2,body.landscape #resCourse{width:100%;margin:0}
   <div id="cupArrow" class="hidden"><svg id="cupArrowIc" viewBox="0 0 24 24"><path d="M12 3 L18 12 L13.8 10.6 L13.8 21 L10.2 21 L10.2 10.6 L6 12 Z"/></svg><span class="caFlag">⛳</span></div>
 </div>
 <div id="topBtns">
-  <button id="btnSettings" class="ib" aria-label="settings"><svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm9.4 4a7.6 7.6 0 0 1-.1 1.2l2 1.6-1.9 3.3-2.4-1a7.6 7.6 0 0 1-2.1 1.2l-.4 2.5h-3.8l-.4-2.5a7.6 7.6 0 0 1-2.1-1.2l-2.4 1L5.9 14.8l2-1.6A7.6 7.6 0 0 1 7.8 12c0-.4 0-.8.1-1.2l-2-1.6 1.9-3.3 2.4 1a7.6 7.6 0 0 1 2.1-1.2l.4-2.5h3.8l.4 2.5c.8.3 1.5.7 2.1 1.2l2.4-1 1.9 3.3-2 1.6c.1.4.1.8.1 1.2z"/></svg></button>
+  <button id="btnSettings" class="ib" aria-label="settings"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M22.47 10.34L22.47 13.66L20.11 13.78L18.99 16.47L20.58 18.23L18.23 20.58L16.47 18.99L13.78 20.11L13.66 22.47L10.34 22.47L10.22 20.11L7.53 18.99L5.77 20.58L3.42 18.23L5.01 16.47L3.89 13.78L1.53 13.66L1.53 10.34L3.89 10.22L5.01 7.53L3.42 5.77L5.77 3.42L7.53 5.01L10.22 3.89L10.34 1.53L13.66 1.53L13.78 3.89L16.47 5.01L18.23 3.42L20.58 5.77L18.99 7.53L20.11 10.22ZM15.40 12.00A3.40 3.40 0 1 0 8.60 12.00A3.40 3.40 0 1 0 15.40 12.00Z"/></svg></button>
   <button id="btnPause" class="ib hidden" aria-label="pause"><span class="pauseIc"></span></button>
 </div>
 <button id="btnGift" class="btn reward hidden"></button>
@@ -2831,7 +2843,7 @@ const BALLPHYS={
       bounceCd:0,bounceK:1,cannonI:-1,cannonT:0,cannonCd:0,
       rotAxisX:1,rotAxisY:0,rotAxisZ:0,rotSpeed:0,events:[]};
   },
-  place(B,x,z,H){B.x=x;B.z=z;const s=H.sample(x,z,0,_S);B.y=s.on?s.h:0;B.vx=0;B.vy=0;B.vz=0;B.grounded=true;B.rest=true;B.sunk=false;B.shotFromX=x;B.shotFromZ=z;B.bounces=0;B.padCd=0;B.portalCd=0;B.lipCd=0;B.slowT=0;B.bumperChain=0;B.bounceCd=0;B.bounceK=1;B.cannonI=-1;B.cannonT=0;B.cannonCd=0;},
+  place(B,x,z,H){B.x=x;B.z=z;const s=H.sample(x,z,0,_S);B.y=s.on?s.h:0;B.vx=0;B.vy=0;B.vz=0;B.rotSpeed=0;B.grounded=true;B.rest=true;B.sunk=false;B.shotFromX=x;B.shotFromZ=z;B.bounces=0;B.padCd=0;B.portalCd=0;B.lipCd=0;B.slowT=0;B.bumperChain=0;B.bounceCd=0;B.bounceK=1;B.cannonI=-1;B.cannonT=0;B.cannonCd=0;},
   respawn(B,H){this.place(B,B.shotFromX,B.shotFromZ,H);},
   shoot(B,dx,dz,speed){
     const l=Math.hypot(dx,dz)||1;speed=clamp(speed,this.CONST.MIN_SHOT,this.CONST.MAX_SHOT);
@@ -3042,7 +3054,9 @@ const BALLPHYS={
         if(B.slowT>1.0){B.vx=0;B.vz=0;B.rest=true;B.slowT=0;B.bumperChain=0;if(!B.ghost)B.events.push('rest');}
       }
       // rolling rotation (visual)
-      if(sp>0.01){B.rotAxisX=-B.vz/sp;B.rotAxisY=0;B.rotAxisZ=B.vx/sp;B.rotSpeed=sp/C.R;}else B.rotSpeed=0;
+      // rolling rotation (visual) — from the velocity AFTER the rest logic, so a ball that just settled stops turning
+      const sp2=Math.hypot(B.vx,B.vz);
+      if(sp2>0.01){B.rotAxisX=-B.vz/sp2;B.rotAxisY=0;B.rotAxisZ=B.vx/sp2;B.rotSpeed=sp2/C.R;}else B.rotSpeed=0;
     } else B.slowT=0;
   },
   /* Ghost simulation of a candidate shot. Returns {sunk, water, voided, x,z, strokesTime, pts(n)} .
@@ -4358,8 +4372,10 @@ const UI={
     b(e.btnSettings,h.settings);b(e.btnPause,h.pause);
     b(e.btnUndo,h.undo);b(e.btnLine,h.line);b(e.btnGift,h.gift);b(e.btnStreakSave,h.streakSave);
   },
-  show(n){const el=this.el[n];if(el)el.classList.add('show');},
-  hide(n){const el=this.el[n];if(el)el.classList.remove('show');},
+  show(n){const el=this.el[n];if(el)el.classList.add('show');this._modalSync();},
+  hide(n){const el=this.el[n];if(el)el.classList.remove('show');this._modalSync();},
+  /* the gear/pause buttons float above everything; while a full-screen menu is open they must not (they covered titles on phones) */
+  _modalSync(){const M=['courses','holes','stats','settings','daily','dailyEnd','shop','results','oos','maraEnd'];document.body.classList.toggle('modal',M.some(id=>this.el[id]&&this.el[id].classList.contains('show')));},
   hideAll(){for(const n of ['menu','courses','holes','stats','settings','daily','dailyEnd','shop','banner','pause','oos','results','maraEnd'])this.hide(n);if(this.el.btnGift)this.el.btnGift.classList.add('hidden');},
   hud(b){this.el.hud.classList.toggle('hidden',!b);this.el.btnPause.classList.toggle('hidden',!b);},
   undoOffer(b){const el=this.el.btnUndo;if(el){el.classList.toggle('hidden',!b);el.classList.remove('busy');}},
@@ -4567,7 +4583,7 @@ const UI={
       card.className='scard '+this._rarity(it)+(sel?' sel':'')+(owned?'':' locked')+(popId===tag?' pop':'');
       const cv=document.createElement('canvas');cv.width=cv.height=112;
       if(tab==='balls')this._ballIcon(cv,it.skin,owned);
-      else if(tab==='trails'){this._trailIcon(cv,it.fx,owned,0);this._trailCvs.push([cv,it.fx,owned]);}
+      else if(tab==='trails'){this._trailIcon(cv,it.fx,owned,0.35);}   // a still frame: the moving preview read as a 'spinning ball' after a purchase
       else if(tab==='auras')this._auraIcon(cv,it.id,owned);
       else this._flagIcon(cv,it.id,owned);
       card.appendChild(cv);
@@ -4591,16 +4607,7 @@ const UI={
     });
     this.show('shop');
     this._animTrails();},
-  _animTrails(){
-    if(this._shopAnim)cancelAnimationFrame(this._shopAnim);
-    const step=()=>{
-      if(PG.paused){this._shopAnim=0;return;}
-      if(!this.el.shop.classList.contains('show')){this._shopAnim=0;return;}
-      const t=performance.now()/1000;
-      for(const row of (this._trailCvs||[]))this._trailIcon(row[0],row[1],row[2],t);
-      this._shopAnim=requestAnimationFrame(step);
-    };
-    this._shopAnim=requestAnimationFrame(step);},
+  _animTrails(){if(this._shopAnim){cancelAnimationFrame(this._shopAnim);this._shopAnim=0;}},
   /* a drawn padlock reads identically on every platform, unlike an emoji */
   _lock(g,w){
     g.fillStyle='rgba(10,14,24,.5)';g.beginPath();g.arc(w/2,w/2,w/2-2,0,TAU);g.fill();
@@ -5043,6 +5050,11 @@ const GAME={
       shop(){AUD.ensure();AUD.ui();UI.hideAll();g._shop();},
       shopTab(t){AUD.tab();UI.shopTabSet(t);g._shop();},
       back(){AUD.uiBack();g._markShopSeen();
+        if(UI.el.settings.classList.contains('show')){UI.hide('settings');const r=g._setReturn;g._setReturn=null;const H=g._h||{};
+          if(r==='pause'&&g.state==='pause'){UI.show('pause');return;}
+          const again={shop:()=>{UI.hideAll();g._shop();},courses:()=>{UI.hideAll();g._showCourses();},holes:()=>{UI.hideAll();g._showCourses();},daily:()=>H.daily&&H.daily(),stats:()=>H.stats&&H.stats()}[r];
+          if(again&&g.state==='menu'){again();return;}
+          UI.hideAll();g.toMenu(false);return;}
         if(g._shopReturn==='pause'&&g.state==='pause'){g._shopReturn=null;UI.hide('shop');UI.hide('courses');UI.show('pause');return;}
         g._shopReturn=null;UI.hideAll();g.toMenu(false);},
       resume(){AUD.ui();g.closePause();},
@@ -5050,8 +5062,8 @@ const GAME={
       restartHole(){AUD.ui();UI.hideAll();g.restartHole();},
       quit(){AUD.uiBack();g.toMenu(false);},
       pause(){AUD.ui();g.openPause();},
-      undo(){g._reward('undo_shot',UI.el.btnUndo,ok=>{if(ok)g._undoShot();});},
-      line(){g._reward('show_line',UI.el.btnLine,ok=>{if(ok)g._showLine();});},
+      undo(){if(g.state==='pause')return;g._reward('undo_shot',UI.el.btnUndo,ok=>{if(ok)g._undoShot();});},
+      line(){if(g.state==='pause')return;g._reward('show_line',UI.el.btnLine,ok=>{if(ok)g._showLine();});},
       gift(){g._reward('coin_gift',UI.el.btnGift,ok=>{if(ok)g._giftCoins();});},
       streakSave(){g._reward('streak_save',UI.el.btnStreakSave,ok=>{if(ok)g._streakSave();});},
       settings(){AUD.ensure();AUD.ui();g._showSettings();},
@@ -5144,6 +5156,11 @@ const GAME={
   },
   _showSettings(){
     const g=this,S=this.S;
+    // settings never sit on top of another card: mid-hole the game pauses first, and BACK returns to where the gear was pressed
+    if(this.state==='aim'||this.state==='drag'||this.state==='rolling'||this.state==='flyover'||this.state==='sunk')this.openPause();
+    const menuOv=['shop','courses','holes','daily','stats'].find(id=>UI.el[id]&&UI.el[id].classList.contains('show'));
+    this._setReturn=this.state==='pause'?'pause':(menuOv||'menu');
+    UI.hideAll();
     const onoff=[{k:'on',v:1},{k:'off',v:0}];
     const build=()=>UI.settings([
       {k:'set_sfx',value:S.muted?0:1,opts:onoff,set(v){S.muted=!v;AUD.setUserMute(S.muted);g.save();build();}},
@@ -5620,10 +5637,10 @@ const GAME={
       PG.flush();AUD.setPaused(true);AUD.stopLoops();
       // an ad the game itself requested is not a pause the player has to dismiss: no PAUSED card, resume flows straight back
       if(!PG.adBusy&&(this.state==='aim'||this.state==='drag'||this.state==='rolling'||this.state==='flyover'||this.state==='sunk'))this.openPause();
-      this._hostPaused=true;
+      this._hostPaused=true;if(!PG.adBusy)document.body.classList.add('hostpause');   // a game-requested ad is not a host pause the player must sit out
       if(this._raf){cancelAnimationFrame(this._raf);this._raf=0;}
     }else{
-      this._hostPaused=false;this._lt=0;
+      this._hostPaused=false;this._lt=0;document.body.classList.remove('hostpause');
       if(this.state!=='pause')AUD.setPaused(false);
       if(!this._raf&&this._loopOn)this._raf=requestAnimationFrame(ts=>this._frame(ts));
       if(UI.el.shop&&UI.el.shop.classList.contains('show'))UI._animTrails();
@@ -5631,7 +5648,7 @@ const GAME={
   },
   openPause(){
     if(this.state==='pause'||this.state==='menu'||this.state==='results'||this.state==='oos'||this.state==='maraEnd'||this.state==='ad')return;
-    this._pauseFrom=this.state;this.state='pause';UI.power(-1);this.drag=null;AIM.clear();
+    this._pauseFrom=this.state;this.state='pause';UI.power(-1);this.drag=null;AIM.clear();UI.hide('settings');
     UI.show('pause');AUD.duck(0.4);
   },
   closePause(){
@@ -5671,6 +5688,7 @@ const GAME={
     let dt=this._lt?Math.min(now-this._lt,1/20):1/60;this._lt=now;
     if(this.slice)dt=this.slice;
     const paused=PG.paused||this.state==='pause';
+    document.body.classList.toggle('paused',this.state==='pause');
     GL.resize();
     const simDt=paused?0:dt;
     this.t+=simDt;GL.scene.time=this.t;
@@ -5769,6 +5787,7 @@ const GAME={
     WORLD.update(simDt);
     if(!paused&&CAM.eye){const fx3=CAM.look[0]-CAM.pos[0],fz3=CAM.look[2]-CAM.pos[2],fl3=Math.hypot(fx3,fz3)||1;
       WORLD.ambient(dt,CAM.eye,[fx3/fl3,0,fz3/fl3],CAM.right,CAM.up);}
+    if(B&&B.rest)B.rotSpeed=0;   // belt and braces: a resting ball never turns, whatever left the value behind
     BALLM.update(B||{rotSpeed:0,x:0,y:0,z:0},simDt);
     if(H)FLAG.update(this.t);
     COURSEMESH.update(simDt);
