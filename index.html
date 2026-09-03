@@ -337,18 +337,72 @@ body.landscape #results h2,body.landscape #resCourse{width:100%;margin:0}
   #holeBox{left:calc(env(safe-area-inset-left,0px) + var(--sal) + 88px);right:calc(env(safe-area-inset-right,0px) + var(--sar) + 112px);padding:6px 9px}
 }
 
-/* ---------- MediaCube revision v1.3 ---------- */
-body.paused #btnLine,body.paused #btnUndo,body.paused #cupArrow,body.paused #coach,body.paused #btnPause{visibility:hidden!important}
-body.hostpause .overlay .btn,body.hostpause .ib,body.hostpause .setSeg button,body.hostpause .scard,body.hostpause .tab{pointer-events:none!important;opacity:.55}
+/* ---------- MediaCube revision v1.4 ----------
+   Two rules keep every screen safe at every size:
+   (a) the fixed corner buttons own a reserved band that overlay content never enters;
+   (b) nothing has a hard pixel floor — grids and rows shrink instead of escaping their card. */
+:root{--corner:58px;--band:calc(env(safe-area-inset-top,0px) + var(--sat) + var(--corner) + 20px)}
+
+/* (a) reserved band + overlays that can always be scrolled to their top */
+.overlay{padding-top:var(--band)}
+#menu,#daily,#results,#settings,#stats,#shop,#courses,#holes,#pause,#oos,#maraEnd,#dailyEnd{justify-content:flex-start}
+#menu>:first-child,#daily>:first-child,#results>:first-child,
+#settings>:first-child,#stats>:first-child,#shop>:first-child,#courses>:first-child,#holes>:first-child,
+#pause>:first-child,#oos>:first-child,#maraEnd>:first-child,#dailyEnd>:first-child{margin-top:auto}
+#menu>:last-child,#daily>:last-child,#results>:last-child,
+#settings>:last-child,#stats>:last-child,#shop>:last-child,#courses>:last-child,#holes>:last-child,
+#pause>:last-child,#oos>:last-child,#maraEnd>:last-child,#dailyEnd>:last-child{margin-bottom:auto}
+
+/* the HUD and the corner buttons are decoration: they never share the screen with a card or a pause */
+body.modal #hud,body.paused #hud,body.hostpause #hud{visibility:hidden}
+body.modal #topBtns,body.modal #btnGift{visibility:hidden}
+body.paused #btnPause{visibility:hidden!important}
+body.coaching #hint,body.coaching #kbHint{visibility:hidden}   /* the coach already says it, in the middle of the screen */
+
+/* (b) a pause stops the loop AND every animation; only the simulated-ad card stays usable */
+body.hostpause .btn,body.hostpause .ib,body.hostpause .setSeg button,body.hostpause .scard,body.hostpause .tab,body.hostpause .ccard{pointer-events:none!important;opacity:.55}
 body.hostpause #adMock .btn{pointer-events:auto!important;opacity:1}
-body.modal #topBtns{visibility:hidden}
+body.paused *,body.hostpause *{animation-play-state:paused!important}
+body.hostpause #adMock *{animation-play-state:running!important}
+
+/* (c) grids and rows shrink; the width caps keep the look identical wherever there is room */
+#shopGrid{grid-template-columns:repeat(3,minmax(0,1fr));width:min(94vw,382px)}
+#courseGrid{grid-template-columns:repeat(2,minmax(0,1fr));width:min(94vw,400px)}
+#holeGrid{grid-template-columns:repeat(3,minmax(0,1fr));width:min(94vw,348px)}
+#statGrid{grid-template-columns:repeat(2,minmax(0,1fr));width:min(94vw,393px)}
+body.landscape #shopGrid{grid-template-columns:repeat(4,minmax(0,1fr));width:min(94vw,510px)}
+body.landscape #courseGrid{grid-template-columns:repeat(4,minmax(0,1fr));width:min(94vw,876px)}
+body.landscape #holeGrid{grid-template-columns:repeat(5,minmax(0,1fr));width:min(94vw,594px)}
+body.landscape #statGrid{grid-template-columns:repeat(4,minmax(0,1fr));width:min(94vw,747px)}
+.scard,.stRow,.ccard,.mRow,.setRow,.pill,.tabs,.row,.col,.menuBtns{min-width:0}
+.scard>*,.stRow>*,.ccard>*,.mRow>*{min-width:0;max-width:100%}
+.scard canvas{max-width:100%}
+.sname,.scost,.stRow .k,.stRow .v,.ccard .cname,.ccard .cnum{overflow:hidden;text-overflow:ellipsis}
+/* settings rows: the label wraps and shrinks, the segment keeps 44px targets — never pushed out of the card */
+.setRow{gap:8px}
+.setRow .lbl{min-width:0;flex:1 1 auto;overflow-wrap:anywhere;text-align:left}
+.setSeg{min-width:0;flex:0 0 auto}
+.setSeg button{min-width:44px;flex:0 1 auto;padding:9px 8px}
+#setList,#missionList{width:min(94vw,340px)}
 #shopGrid{max-width:100%}
+
+/* row-direction layouts (wide & short, landscape results) keep their own centring */
+@media (max-height:560px) and (min-aspect-ratio:7/4){
+  #menu,#daily,#results{justify-content:center}
+  #menu>:first-child,#menu>:last-child,#daily>:first-child,#daily>:last-child,#results>:first-child,#results>:last-child{margin-top:0;margin-bottom:0}
+}
+body.landscape #results{justify-content:center}
+body.landscape #results>:first-child,body.landscape #results>:last-child{margin-top:0;margin-bottom:0}
+/* very short windows: drop the decorative line so the menu still fits without scrolling */
+@media (max-height:520px){#menu #menuHint{display:none}#menu{gap:7px}}
+
 @media (max-width:480px){
   #dots{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 104px)}
   #btnUndo,#btnLine{right:calc(env(safe-area-inset-right,0px) + var(--sar) + 12px)}
   #btnLine{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 128px)}
   #btnUndo{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 184px)}
 }
+
 </style>
 </head>
 <body>
@@ -4403,6 +4457,7 @@ const UI={
     this.el.cupArrowIc.style.transform='rotate('+((ang*180/Math.PI)+90).toFixed(1)+'deg)';},
   /* the coach hand loops the drag gesture over the ball until the player tries it once */
   coach(show,x,y){const c=this.el.coach;if(!c)return;
+    document.body.classList.toggle('coaching',!!show);
     if(!show){if(!c.classList.contains('hidden'))c.classList.add('hidden');return;}
     c.classList.remove('hidden');c.style.left=x+'px';c.style.top=y+'px';
     this.el.coachLbl.textContent=T('coach_drag');},
@@ -5637,24 +5692,31 @@ const GAME={
       PG.flush();AUD.setPaused(true);AUD.stopLoops();
       // an ad the game itself requested is not a pause the player has to dismiss: no PAUSED card, resume flows straight back
       if(!PG.adBusy&&(this.state==='aim'||this.state==='drag'||this.state==='rolling'||this.state==='flyover'||this.state==='sunk'))this.openPause();
-      this._hostPaused=true;if(!PG.adBusy)document.body.classList.add('hostpause');   // a game-requested ad is not a host pause the player must sit out
+      this._hostPaused=true;this._syncPauseClasses();   // a game-requested ad is not a host pause the player must sit out
       if(this._raf){cancelAnimationFrame(this._raf);this._raf=0;}
     }else{
-      this._hostPaused=false;this._lt=0;document.body.classList.remove('hostpause');
+      this._hostPaused=false;this._lt=0;this._syncPauseClasses();
       if(this.state!=='pause')AUD.setPaused(false);
       if(!this._raf&&this._loopOn)this._raf=requestAnimationFrame(ts=>this._frame(ts));
       if(UI.el.shop&&UI.el.shop.classList.contains('show'))UI._animTrails();
     }
   },
+  /* body.paused / body.hostpause drive every "stop while paused" CSS rule. They are set HERE, never from
+     the frame loop: a host pause cancels the loop, so a loop-driven toggle would never run (v1.3 bug). */
+  _syncPauseClasses(){
+    const b=document.body.classList;
+    b.toggle('paused',this.state==='pause');
+    b.toggle('hostpause',!!this._hostPaused&&!PG.adBusy);
+  },
   openPause(){
     if(this.state==='pause'||this.state==='menu'||this.state==='results'||this.state==='oos'||this.state==='maraEnd'||this.state==='ad')return;
-    this._pauseFrom=this.state;this.state='pause';UI.power(-1);this.drag=null;AIM.clear();UI.hide('settings');
+    this._pauseFrom=this.state;this.state='pause';UI.power(-1);this.drag=null;AIM.clear();UI.hide('settings');this._syncPauseClasses();
     UI.show('pause');AUD.duck(0.4);
   },
   closePause(){
     if(PG.paused)return;                       // the host owns the pause; RESUME waits for onResume
     UI.hide('pause');AUD.duck(1);AUD.setPaused(false);
-    this.state=this._pauseFrom==='drag'?'aim':(this._pauseFrom||'aim');
+    this.state=this._pauseFrom==='drag'?'aim':(this._pauseFrom||'aim');this._syncPauseClasses();
   },
   /* ---------- trail cosmetics ---------- */
   _trailFx(dt){
@@ -5688,7 +5750,7 @@ const GAME={
     let dt=this._lt?Math.min(now-this._lt,1/20):1/60;this._lt=now;
     if(this.slice)dt=this.slice;
     const paused=PG.paused||this.state==='pause';
-    document.body.classList.toggle('paused',this.state==='pause');
+    this._syncPauseClasses();
     GL.resize();
     const simDt=paused?0:dt;
     this.t+=simDt;GL.scene.time=this.t;
