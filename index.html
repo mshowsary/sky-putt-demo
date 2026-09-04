@@ -35,7 +35,7 @@ button{font-family:inherit}
 #holeBox{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 12px);
   left:calc(env(safe-area-inset-left,0px) + var(--sal) + 100px);
   right:calc(env(safe-area-inset-right,0px) + var(--sar) + 124px);
-  transform:none;margin:0 auto;width:max-content;max-width:100%;
+  transform:none;margin:0 auto;width:max-content;max-width:calc(100vw - var(--hudL) - var(--hudR) - 8px);text-overflow:ellipsis;
   padding:7px 14px;font-size:clamp(10px,3.1vw,15px);white-space:nowrap;overflow:hidden}
 #dots{position:absolute;top:calc(env(safe-area-inset-top,0px) + var(--sat) + 58px);left:50%;transform:translateX(-50%);display:flex;gap:6px}
 #dots .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.25)}
@@ -270,7 +270,7 @@ body.landscape #shopGrid{grid-template-columns:repeat(4,minmax(86px,118px));max-
 /* stacked in the free right-hand column under the gear/pause icons: never over the ball, the coach hand or the hint */
 #btnLine{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 68px)}
 #btnUndo{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 124px)}
-#btnGift{position:fixed;top:calc(env(safe-area-inset-top,0px) + var(--sat) + 10px);left:calc(env(safe-area-inset-left,0px) + var(--sal) + 10px);z-index:30;min-width:0;padding:10px 16px;font-size:clamp(13px,3.6vmin,16px)}
+#btnGift{min-width:0;padding:10px 16px;font-size:clamp(13px,3.6vmin,16px)}   /* lives in the menu list: nothing floats over a card */
 .mDouble{align-self:flex-end;min-height:44px;min-width:96px;padding:6px 14px;border-radius:999px;border:none;border-bottom:3px solid #0a7a44;background:linear-gradient(#5ff0a8,#12c46e);color:#03200f;font-family:var(--disp);font-size:12px;letter-spacing:1px;cursor:pointer;pointer-events:auto}
 .mDouble::before{content:'\25B6';font-size:.8em;margin-right:6px;opacity:.85}
 /* landscape tweaks */
@@ -355,7 +355,7 @@ body.landscape #results h2,body.landscape #resCourse{width:100%;margin:0}
 
 /* the HUD and the corner buttons are decoration: they never share the screen with a card or a pause */
 body.modal #hud,body.paused #hud,body.hostpause #hud{visibility:hidden}
-body.modal #topBtns,body.modal #btnGift{visibility:hidden}
+body.modal #topBtns{visibility:hidden}   /* the gift now lives inside the menu list, so it stays visible there */
 body.paused #btnPause{visibility:hidden!important}
 body.coaching #hint,body.coaching #kbHint{visibility:hidden}   /* the coach already says it, in the middle of the screen */
 
@@ -403,6 +403,32 @@ body.landscape #results>:first-child,body.landscape #results>:last-child{margin-
   #btnUndo{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 184px)}
 }
 
+/* ---------- v1.5: the in-play top row is collision-proof down to the smallest window a reviewer can make ----------
+   The hole chip is clamped to the gap between the coin pill and the corner buttons (its old max-width:100%
+   resolved against the viewport, so it grew straight under the gear). Below 340px the chip takes its own row. */
+:root{--hudL:100px;--hudR:124px}
+@media (max-width:340px){
+  :root{--hudL:8px;--hudR:8px}
+  .ib{width:44px;height:44px}.ib svg{width:19px;height:19px}
+  #topBtns{gap:6px;top:calc(env(safe-area-inset-top,0px) + var(--sat) + 8px)}
+  #coinBox,#strokeBox{padding:5px 10px 5px 8px;font-size:12px}
+  #holeBox{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 56px);left:8px;right:8px;padding:5px 10px;font-size:11px}
+  #strokeBox{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 98px)}
+  #dots{display:none}
+  #btnLine{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 140px)}
+  #btnUndo{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 192px)}
+  #btnUndo,#btnLine{padding:9px 12px;font-size:12px}
+}
+@media (max-width:240px){
+  .ib{width:44px;height:44px}.ib svg{width:18px;height:18px}
+  #coinBox,#strokeBox{padding:4px 8px 4px 6px;font-size:11px}
+  #holeBox{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 58px);font-size:10px}
+  #strokeBox{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 96px)}
+  #btnLine{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 134px)}
+  #btnUndo{top:calc(env(safe-area-inset-top,0px) + var(--sat) + 182px)}
+  .overlay{gap:6px}
+}
+
 </style>
 </head>
 <body>
@@ -428,16 +454,17 @@ body.landscape #results>:first-child,body.landscape #results>:last-child{margin-
   <button id="btnSettings" class="ib" aria-label="settings"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M22.47 10.34L22.47 13.66L20.11 13.78L18.99 16.47L20.58 18.23L18.23 20.58L16.47 18.99L13.78 20.11L13.66 22.47L10.34 22.47L10.22 20.11L7.53 18.99L5.77 20.58L3.42 18.23L5.01 16.47L3.89 13.78L1.53 13.66L1.53 10.34L3.89 10.22L5.01 7.53L3.42 5.77L5.77 3.42L7.53 5.01L10.22 3.89L10.34 1.53L13.66 1.53L13.78 3.89L16.47 5.01L18.23 3.42L20.58 5.77L18.99 7.53L20.11 10.22ZM15.40 12.00A3.40 3.40 0 1 0 8.60 12.00A3.40 3.40 0 1 0 15.40 12.00Z"/></svg></button>
   <button id="btnPause" class="ib hidden" aria-label="pause"><span class="pauseIc"></span></button>
 </div>
-<button id="btnGift" class="btn reward hidden"></button>
 <div id="menu" class="overlay show">
   <div class="titleWrap"><h1 id="title">SKY<br><span>PUTT</span></h1><div id="tag" class="tag"></div></div>
   <div class="menuBtns">
     <button id="btnPlay" class="btn big"></button>
+    <button id="btnGift" class="btn reward hidden"></button>
     <div class="row">
       <button id="btnCourses" class="btn ghost"></button>
       <button id="btnMarathon" class="btn ghost"></button>
       <button id="btnShop" class="btn ghost"></button>
       <button id="btnStats" class="btn ghost hidden"></button>
+      <button id="btnMenuSettings" class="btn ghost"></button>
     </div>
     <button id="btnDaily" class="btn dailyBtn hidden"><span id="dailyDot" class="dot2 hidden"></span><span id="btnDailyLbl"></span></button>
     <button id="btnStreakSave" class="btn reward hidden"></button>
@@ -508,6 +535,7 @@ body.landscape #results>:first-child,body.landscape #results>:last-child{margin-
   <div class="col">
     <button id="btnResume" class="btn big"></button>
     <button id="btnPauseShop" class="btn ghost"></button>
+    <button id="btnPauseSettings" class="btn ghost"></button>
     <button id="btnRestart" class="btn ghost"></button>
     <button id="btnQuit" class="btn ghost"></button>
   </div>
@@ -4358,7 +4386,7 @@ const UI={
   init(){
     const ids=['hud','holeBox','holeLbl','dots','strokeBox','strokeLbl','coinBox','coinNum','windChip','windArrow','windNum',
       'callout','hint','powerBox','powerFill','kbHint','btnUndo','btnLine','btnGift','btnStreakSave','coach','coachLbl','cupArrow','cupArrowIc',
-      'btnSettings','btnPause','menu','title','tag','btnPlay','btnCourses','btnMarathon','btnShop','btnStats',
+      'btnSettings','btnPause','btnMenuSettings','btnPauseSettings','menu','title','tag','btnPlay','btnCourses','btnMarathon','btnShop','btnStats',
       'btnDaily','btnDailyLbl','dailyDot','prog','lvPill','rankName','xpBar','xpFill','progLine','menuStars','menuBest','menuHint',
       'courses','coursesTitle','courseGrid','btnCoursesBack',
       'holes','holesTitle','holesStarNum','holeGrid','btnHolesBack',
@@ -4393,6 +4421,7 @@ const UI={
     e.btnDailyLbl.textContent=t('daily');
     e.coursesTitle.textContent=t('courses');e.btnCoursesBack.textContent=t('back');e.btnHolesBack.textContent=t('back');
     e.statsTitle.textContent=t('stats');e.btnStatsBack.textContent=t('back');
+    e.btnMenuSettings.textContent=t('settings');e.btnPauseSettings.textContent=t('settings');
     e.setTitle.textContent=t('settings');e.btnSetBack.textContent=t('back');
     e.dailyTitle.textContent=t('daily');e.btnDailyBack.textContent=t('back');e.btnDailyPlay.textContent=t('play');
     e.deTitle.textContent=t('daily_over');e.btnDeDone.textContent=t('continue_t');e.btnDeRetry.textContent=t('daily_retry');
@@ -4425,11 +4454,12 @@ const UI={
     b(e.btnMaraExtra,h.maraExtra);b(e.btnMaraRetry,h.maraRetry);b(e.btnMaraMenu,h.quit);
     b(e.btnSettings,h.settings);b(e.btnPause,h.pause);
     b(e.btnUndo,h.undo);b(e.btnLine,h.line);b(e.btnGift,h.gift);b(e.btnStreakSave,h.streakSave);
+    b(e.btnMenuSettings,h.settings);b(e.btnPauseSettings,h.settings);
   },
   show(n){const el=this.el[n];if(el)el.classList.add('show');this._modalSync();},
   hide(n){const el=this.el[n];if(el)el.classList.remove('show');this._modalSync();},
   /* the gear/pause buttons float above everything; while a full-screen menu is open they must not (they covered titles on phones) */
-  _modalSync(){const M=['courses','holes','stats','settings','daily','dailyEnd','shop','results','oos','maraEnd'];document.body.classList.toggle('modal',M.some(id=>this.el[id]&&this.el[id].classList.contains('show')));},
+  _modalSync(){const M=['menu','pause','courses','holes','stats','settings','daily','dailyEnd','shop','results','oos','maraEnd'];document.body.classList.toggle('modal',M.some(id=>this.el[id]&&this.el[id].classList.contains('show')));},
   hideAll(){for(const n of ['menu','courses','holes','stats','settings','daily','dailyEnd','shop','banner','pause','oos','results','maraEnd'])this.hide(n);if(this.el.btnGift)this.el.btnGift.classList.add('hidden');},
   hud(b){this.el.hud.classList.toggle('hidden',!b);this.el.btnPause.classList.toggle('hidden',!b);},
   undoOffer(b){const el=this.el.btnUndo;if(el){el.classList.toggle('hidden',!b);el.classList.remove('busy');}},
