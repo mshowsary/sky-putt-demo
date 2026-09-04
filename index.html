@@ -469,6 +469,18 @@ body.landscape #results>:first-child,body.landscape #results>:last-child{margin-
   border-radius:999px;background:linear-gradient(#ffe89a,#f0b429);color:#4a3200;font-family:var(--disp);letter-spacing:0}
 .ccard .cstars{flex-wrap:wrap;justify-content:center}
 
+/* ---------- v1.7: no gear on the playfield ----------
+   Settings are reached from the menu and from the pause card, so the in-play corner holds only PAUSE.
+   That frees ~56px of the top row, which is what let the chip and the coin pill collide below ~180px. */
+:root{--hudR:76px}
+@media (max-width:340px){:root{--hudR:8px}.ib{width:44px;height:44px}}
+#topBtns{gap:0}
+
+/* the offer label: beside the icon, brief, and it never crosses the whole screen */
+.rewardIc::after{white-space:normal;text-align:right;max-width:calc(100vw - 84px);width:max-content;line-height:1.15}
+.rewardIc.tip::after{opacity:1}
+@media (max-width:340px){.rewardIc::after{right:54px;font-size:11px;padding:5px 8px}}
+
 </style>
 </head>
 <body>
@@ -491,7 +503,6 @@ body.landscape #results>:first-child,body.landscape #results>:last-child{margin-
   <div id="cupArrow" class="hidden"><svg id="cupArrowIc" viewBox="0 0 24 24"><path d="M12 3 L18 12 L13.8 10.6 L13.8 21 L10.2 21 L10.2 10.6 L6 12 Z"/></svg><span class="caFlag">⛳</span></div>
 </div>
 <div id="topBtns">
-  <button id="btnSettings" class="ib" aria-label="settings"><svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M22.47 10.34L22.47 13.66L20.11 13.78L18.99 16.47L20.58 18.23L18.23 20.58L16.47 18.99L13.78 20.11L13.66 22.47L10.34 22.47L10.22 20.11L7.53 18.99L5.77 20.58L3.42 18.23L5.01 16.47L3.89 13.78L1.53 13.66L1.53 10.34L3.89 10.22L5.01 7.53L3.42 5.77L5.77 3.42L7.53 5.01L10.22 3.89L10.34 1.53L13.66 1.53L13.78 3.89L16.47 5.01L18.23 3.42L20.58 5.77L18.99 7.53L20.11 10.22ZM15.40 12.00A3.40 3.40 0 1 0 8.60 12.00A3.40 3.40 0 1 0 15.40 12.00Z"/></svg></button>
   <button id="btnPause" class="ib hidden" aria-label="pause"><span class="pauseIc"></span></button>
 </div>
 <div id="menu" class="overlay show">
@@ -4503,6 +4514,9 @@ const UI={
   _modalSync(){const M=['menu','pause','courses','holes','stats','settings','daily','dailyEnd','shop','results','oos','maraEnd'];document.body.classList.toggle('modal',M.some(id=>this.el[id]&&this.el[id].classList.contains('show')));},
   hideAll(){for(const n of ['menu','courses','holes','stats','settings','daily','dailyEnd','shop','banner','pause','oos','results','maraEnd'])this.hide(n);if(this.el.btnGift)this.el.btnGift.classList.add('hidden');},
   hud(b){this.el.hud.classList.toggle('hidden',!b);this.el.btnPause.classList.toggle('hidden',!b);},
+  /* names an icon offer once, right where the icon is: no banner across the course */
+  flashTip(id){const el=this.el[id];if(!el||el.classList.contains('hidden'))return;
+    el.classList.add('tip');clearTimeout(this['_tipT'+id]);this['_tipT'+id]=setTimeout(()=>el.classList.remove('tip'),2800);},
   undoOffer(b){const el=this.el.btnUndo;if(el){el.classList.toggle('hidden',!b);el.classList.remove('busy');}},
   lineOffer(b){const el=this.el.btnLine;if(el){el.classList.toggle('hidden',!b);el.classList.remove('busy');}},
   kbHint(b){const el=this.el.kbHint;if(!el)return;if(b)el.textContent=T('kb_hint');el.classList.toggle('hidden',!b);},
@@ -5254,7 +5268,7 @@ const GAME={
   _offerLine(){if(this.attract||this.bot||this.daily||this._lineUsed||!this._rewardOK())return;UI.lineOffer(true);this._offerTip('line','show_line');},
   /* the icon is the affordance; this names it once per save so the offer is never a mystery */
   _offerTip(key,lbl){const S=this.S;if(!S.seen)S.seen={};const k='tip'+key;if(S.seen[k])return;S.seen[k]=1;this.save();
-    setTimeout(()=>UI.toast(T(lbl)+' · '+T('watch_ad')),700);},
+    setTimeout(()=>{if(this.state==='pause'||PG.paused)return;UI.flashTip(key==='line'?'btnLine':'btnUndo');},700);},
   _giftLeft(){const S=this.S,day=(S.tm&&S.tm.d)|0;if(!this._rewardOK())return 0;const n=(S.gift&&S.gift.d===day)?S.gift.n|0:0;return Math.max(0,this.GIFT_PER_DAY-n);},
   _giftCoins(){
     const S=this.S,day=(S.tm&&S.tm.d)|0;
