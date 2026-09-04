@@ -5707,6 +5707,7 @@ const GAME={
     const b=document.body.classList;
     b.toggle('paused',this.state==='pause');
     b.toggle('hostpause',!!this._hostPaused&&!PG.adBusy);
+    AUD.duck(this.state==='pause'?0:1);   // music follows the state: leaving the pause ANY way (resume, retry, menu) brings it back
   },
   openPause(){
     if(this.state==='pause'||this.state==='menu'||this.state==='results'||this.state==='oos'||this.state==='maraEnd'||this.state==='ad')return;
