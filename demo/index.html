@@ -5712,7 +5712,7 @@ const GAME={
   openPause(){
     if(this.state==='pause'||this.state==='menu'||this.state==='results'||this.state==='oos'||this.state==='maraEnd'||this.state==='ad')return;
     this._pauseFrom=this.state;this.state='pause';UI.power(-1);this.drag=null;AIM.clear();UI.hide('settings');this._syncPauseClasses();
-    UI.show('pause');AUD.duck(0.4);
+    UI.show('pause');AUD.duck(0);AUD.stopLoops();   // music + ambience go silent while paused; UI clicks stay
   },
   closePause(){
     if(PG.paused)return;                       // the host owns the pause; RESUME waits for onResume
