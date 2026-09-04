@@ -464,6 +464,12 @@ body.landscape #results>:first-child,body.landscape #results>:last-child{margin-
   .setSeg button{flex:1 1 0}
 }
 
+/* ---------- v1.7: the mastery mark sits in the stars row ----------
+   As a corner badge it overlapped the course name whenever the name wrapped on a narrow card. */
+.ccard .cdone{position:static;top:auto;right:auto;margin-left:4px;padding:1px 6px;font-size:10px;line-height:1.5;
+  border-radius:999px;background:linear-gradient(#ffe89a,#f0b429);color:#4a3200;font-family:var(--disp);letter-spacing:0}
+.ccard .cstars{flex-wrap:wrap;justify-content:center}
+
 </style>
 </head>
 <body>
@@ -4576,9 +4582,10 @@ const UI={
       else{
         const stars=document.createElement('div');stars.className='cstars';
         const mini=document.createElement('span');mini.className='mini';stars.appendChild(mini);
-        stars.appendChild(document.createTextNode(' '+st.courseStars[i]+'/27'));card.appendChild(stars);
+        stars.appendChild(document.createTextNode(' '+st.courseStars[i]+'/27'));
+        if(mastered){const sl=document.createElement('span');sl.className='cdone';sl.textContent='✦';sl.title=T('mastered');stars.appendChild(sl);}
+        card.appendChild(stars);
         if(st.bestT&&st.bestT[i]!==undefined){const bt=document.createElement('div');bt.className='cbest';bt.textContent='Σ '+st.bestT[i];card.appendChild(bt);}
-        if(mastered){const sl=document.createElement('div');sl.className='cdone';sl.textContent='✦';card.appendChild(sl);}
       }
       on(card,'click',ev=>{ev.stopPropagation();if(locked)h.locked(i);else h.pick(i);});
       on(card,'pointerdown',ev=>ev.stopPropagation());
